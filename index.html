@@ -7,13 +7,169 @@
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,600&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Noto+Serif+SC:wght@700;900&display=swap" rel="stylesheet">
-<link rel="stylesheet" href="style.css?v=2">
+<style>
+:root{
+  --red: #7c1420;
+  --red-deep: #5c0e18;
+  --paper: #faf6ee;
+  --ink: #1c1a17;
+  --ink-soft: #46423c;
+  --gold: #c69a3d;
+  --shadow: 0 30px 60px -20px rgba(0,0,0,.55);
+}
+*{box-sizing:border-box;}
+html,body{margin:0;padding:0;}
+body{
+  background: radial-gradient(120% 140% at 50% -10%, var(--red) 0%, var(--red-deep) 60%, #3d0a10 100%);
+  min-height:100vh;
+  font-family:'PT Serif', Georgia, serif;
+  color: var(--ink);
+  display:flex;
+  justify-content:center;
+  padding: 32px 16px 64px;
+}
+.page{ width:100%; max-width: 640px; display:flex; flex-direction:column; align-items:center; gap: 22px; }
+
+#crashBanner{
+  position:sticky; top:0; z-index:9999; background:#ffd9d9; color:#5c0e18;
+  font-family:sans-serif; font-size:13px; line-height:1.5; padding:12px 16px;
+  text-align:center; border-bottom:2px solid #7c1420; width:100%;
+}
+
+.app-header{ text-align:center; color: var(--paper); }
+.app-title{
+  font-family:'Anton', sans-serif; font-size: clamp(28px, 6vw, 40px);
+  letter-spacing: .5px; margin: 0 0 4px; text-transform: uppercase;
+}
+.app-sub{
+  margin: 0 0 14px; font-family:'Oswald', sans-serif; font-weight:400;
+  font-size:14px; letter-spacing:.04em; color: rgba(250,246,238,.85);
+}
+
+.primary-btn, .ghost-btn{
+  font-family:'Oswald', sans-serif; font-weight:600; letter-spacing:.05em;
+  text-transform: uppercase; font-size: 13px; padding: 12px 20px;
+  border-radius: 999px; cursor:pointer; border: 2px solid transparent;
+  transition: transform .15s ease, background .15s ease, color .15s ease;
+  -webkit-tap-highlight-color: rgba(0,0,0,0);
+  touch-action: manipulation;
+}
+.primary-btn{ background: var(--paper); color: var(--red-deep); border-color: var(--paper); }
+.primary-btn:hover:not(:disabled){ transform: translateY(-1px); }
+.primary-btn:disabled{ opacity:.45; cursor:not-allowed; transform:none; }
+.ghost-btn{ background: transparent; color: var(--paper); border-color: rgba(250,246,238,.55); }
+.ghost-btn:hover{ background: rgba(250,246,238,.12); }
+.toggle-btn[aria-pressed="true"]{ background: var(--gold); color: var(--ink); border-color: var(--gold); }
+
+.settings-panel{
+  width:100%; background: rgba(0,0,0,.18); border: 1px solid rgba(250,246,238,.25);
+  border-radius: 10px; padding: 18px;
+}
+.settings-grid{ display:grid; grid-template-columns: repeat(2, 1fr); gap: 12px 16px; }
+.settings-grid label{
+  display:flex; flex-direction:column; gap:6px; font-family:'Oswald', sans-serif;
+  font-size:11px; letter-spacing:.06em; text-transform:uppercase; color: rgba(250,246,238,.85);
+}
+.settings-grid input{
+  font-family:'PT Serif', serif; font-size:14px; padding: 8px 10px; border-radius: 6px;
+  border: 1px solid rgba(0,0,0,.15); background: var(--paper); color: var(--ink);
+}
+@media (max-width: 480px){ .settings-grid{ grid-template-columns: 1fr; } }
+
+.newspaper{
+  position:relative; width:100%; background: var(--paper); box-shadow: var(--shadow);
+  padding: 26px 22px 22px; border: 3px solid var(--ink);
+}
+.corner{ position:absolute; width:26px; height:26px; border: 3px solid var(--ink); }
+.corner-tl{ top:6px; left:6px; border-right:none; border-bottom:none; }
+.corner-tr{ top:6px; right:6px; border-left:none; border-bottom:none; }
+.corner-bl{ bottom:6px; left:6px; border-right:none; border-top:none; }
+.corner-br{ bottom:6px; right:6px; border-left:none; border-top:none; }
+
+.masthead{ display:grid; grid-template-columns: 1fr auto 1fr; align-items:center; gap: 8px; padding: 4px 4px 10px; }
+.masthead-logo{ font-family:'Anton', sans-serif; font-size:13px; line-height:1; letter-spacing:.02em; }
+.logo-mark{ display:block; color: var(--red); }
+.logo-sub{ display:block; font-size:9px; font-family:'Oswald',sans-serif; letter-spacing:.12em; color: var(--ink-soft); }
+.masthead-cjk{ font-family:'Noto Serif SC', serif; font-weight:900; font-size: 20px; text-align:center; white-space:nowrap; }
+.masthead-vol{ text-align:right; font-family:'Oswald', sans-serif; font-size:11px; color: var(--ink-soft); }
+.vol-year{ display:block; font-family:'Anton',sans-serif; font-size:16px; color:var(--ink); }
+
+.rule-thick{ border:none; border-top: 4px solid var(--ink); border-bottom: 1px solid var(--ink); margin: 0 0 14px; height:0; }
+.rule-thin{ border:none; border-top: 1.5px solid var(--ink); margin: 18px 0 10px; }
+
+.headline{
+  font-family:'Anton', sans-serif; font-size: clamp(46px, 12vw, 76px); line-height:.92;
+  text-align:center; margin: 0; text-transform:uppercase; letter-spacing: .5px;
+}
+.tagline{
+  text-align:center; font-family:'Playfair Display', serif; font-style:italic;
+  font-weight:700; font-size: 15px; margin: 4px 0 16px; color: var(--ink-soft);
+}
+
+/* ---------- photo frame: every layer is absolutely stacked and explicitly toggled ---------- */
+.photo-frame{ border: 3px solid var(--ink); padding: 6px; background: var(--ink); }
+.photo-inner{ position:relative; width:100%; aspect-ratio: 4 / 5; background: var(--red-deep); overflow:hidden; }
+.photo-inner > *{ position:absolute; inset:0; width:100%; height:100%; }
+
+#video, #captured{ object-fit: cover; z-index:1; pointer-events:none; }
+#video.is-hidden, #captured.is-hidden{ display:none; }
+#video.mirrored, #captured.mirrored{ transform: scaleX(-1); }
+#video.bw, #captured.bw{ filter: grayscale(1) contrast(1.15) brightness(1.02); }
+
+.photo-empty{
+  z-index:2; display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:14px; color: var(--paper); text-align:center; padding: 20px; font-family:'Oswald', sans-serif;
+}
+.photo-empty.is-hidden{ display:none; pointer-events:none; }
+
+.cam-status{ margin: 0; font-size: 12px; line-height:1.5; color: #ffd9d9; max-width: 280px; }
+.cam-status:empty{ display:none; }
+
+.countdown{
+  z-index:3; display:flex; align-items:center; justify-content:center; font-family:'Anton', sans-serif;
+  font-size: 110px; color: var(--paper); background: rgba(28,26,23,.35); text-shadow: 0 6px 18px rgba(0,0,0,.5);
+  pointer-events:none;
+}
+.countdown.is-hidden{ display:none; }
+
+.issue-banner{
+  margin-top: 14px; background: var(--ink); color: var(--paper); display:flex; align-items:center;
+  justify-content:space-between; padding: 8px 14px; font-family:'Oswald', sans-serif; font-size:12px; letter-spacing:.08em;
+}
+.banner-text{ font-weight:600; text-transform:uppercase; }
+.banner-cjk{ font-family:'Noto Serif SC', serif; font-weight:700; font-size:13px; opacity:.85; }
+
+.columns{ display:grid; grid-template-columns: repeat(3, 1fr); gap: 14px; margin-top: 16px; }
+.col h3{ font-family:'Oswald', sans-serif; font-size: 13px; line-height:1.15; text-transform:uppercase; margin: 8px 0 6px; }
+.col p{ font-size: 10.5px; line-height:1.35; color: var(--ink-soft); margin:0; }
+.col-thumb{ display:block; width:100%; height:56px; filter: grayscale(1) contrast(1.1); border:1px solid var(--ink); }
+.col-title-big{ font-family:'Anton', sans-serif; font-size:17px; letter-spacing:.02em; }
+.mini-map{ color: var(--ink); border: 1px solid var(--ink); padding: 4px; margin-bottom: 6px; }
+.mini-map svg{ width:100%; height:auto; display:block; }
+.cjk-small{ font-family:'Noto Serif SC', serif; font-size: 10px; line-height:1.5; color: var(--ink-soft); }
+
+.paper-footer{
+  text-align:center; margin-top: 18px; font-family:'Playfair Display', serif;
+  font-weight:700; font-style:italic; font-size: 18px; letter-spacing:.02em;
+}
+.paper-footer .dot{ color: var(--red); }
+
+.actions{ display:flex; flex-wrap:wrap; gap:10px; justify-content:center; }
+.hint{
+  color: rgba(250,246,238,.65); font-family:'Oswald', sans-serif; font-size: 11.5px;
+  letter-spacing:.03em; text-align:center; max-width: 420px;
+}
+
+@media (max-width: 480px){
+  .columns{ grid-template-columns: 1fr; }
+  .masthead-cjk{ font-size:16px; }
+}
+</style>
 </head>
 <body>
 
 <div class="page">
 
-  <!-- ============ HEADER / CONTROLS ============ -->
   <header class="app-header">
     <h1 class="app-title">Newspaper Photobooth</h1>
     <p class="app-sub">Step up, strike a pose, make the front page.</p>
@@ -22,7 +178,6 @@
     </button>
   </header>
 
-  <!-- ============ SETTINGS PANEL ============ -->
   <section id="settingsPanel" class="settings-panel" hidden>
     <div class="settings-grid">
       <label>Masthead (small top)
@@ -46,7 +201,6 @@
     </div>
   </section>
 
-  <!-- ============ THE NEWSPAPER ============ -->
   <main id="newspaper" class="newspaper">
 
     <div class="corner corner-tl" aria-hidden="true"></div>
@@ -55,30 +209,30 @@
     <div class="corner corner-br" aria-hidden="true"></div>
 
     <div class="masthead">
-      <div class="masthead-cell masthead-logo">
+      <div class="masthead-logo">
         <span class="logo-mark">RED</span><span class="logo-sub">STUDIO</span>
       </div>
-      <div class="masthead-cell masthead-cjk" id="outMasthead">唐人街</div>
-      <div class="masthead-cell masthead-vol">
+      <div class="masthead-cjk" id="outMasthead">唐人街</div>
+      <div class="masthead-vol">
         <span class="vol-year" id="outYear">20</span>
         <span class="vol-line">VOL. <span id="outVolume">26</span></span>
       </div>
     </div>
-    <div class="rule rule-thick"></div>
+    <div class="rule-thick"></div>
 
     <h2 class="headline" id="outHeadline">BINONDO</h2>
     <p class="tagline" id="outTagline">Love, Laughter, and Lucky Shots!</p>
 
     <div class="photo-frame">
       <div class="photo-inner" id="photoInner">
-        <video id="video" autoplay playsinline muted></video>
-        <img id="captured" alt="Your captured photo" hidden>
+        <video id="video" class="is-hidden" autoplay playsinline muted></video>
+        <img id="captured" class="is-hidden" alt="Your captured photo">
         <div class="photo-empty" id="photoEmpty">
           <p>Camera preview appears here</p>
           <button id="startCam" class="primary-btn" type="button">Start camera</button>
           <p class="cam-status" id="camStatus" aria-live="polite"></p>
         </div>
-        <div class="countdown" id="countdown" hidden></div>
+        <div class="countdown is-hidden" id="countdown"></div>
       </div>
     </div>
 
@@ -142,13 +296,12 @@
       </article>
     </div>
 
-    <div class="rule rule-thin"></div>
+    <div class="rule-thin"></div>
     <footer class="paper-footer">
       <span id="outStudioFooter">my studio</span><span class="dot">.</span>
     </footer>
   </main>
 
-  <!-- ============ ACTION BAR ============ -->
   <section class="actions">
     <button id="captureBtn" class="primary-btn" type="button" disabled>Take photo</button>
     <button id="retakeBtn" class="ghost-btn" type="button" hidden>Retake</button>
@@ -163,6 +316,240 @@
 </div>
 
 <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-<script src="script.js?v=2"></script>
+<script>
+(() => {
+  function showCrashBanner(message) {
+    let banner = document.getElementById('crashBanner');
+    if (!banner) {
+      banner = document.createElement('div');
+      banner.id = 'crashBanner';
+      document.body.prepend(banner);
+    }
+    banner.textContent = message;
+  }
+  window.addEventListener('error', (e) => {
+    showCrashBanner('Script error: ' + (e.message || 'unknown error') + '. Try a hard reload / clear site data.');
+  });
+
+  const $ = (id) => document.getElementById(id);
+
+  const video = $('video');
+  const captured = $('captured');
+  const photoEmpty = $('photoEmpty');
+  const startCamBtn = $('startCam');
+  const captureBtn = $('captureBtn');
+  const retakeBtn = $('retakeBtn');
+  const downloadBtn = $('downloadBtn');
+  const bwToggle = $('bwToggle');
+  const mirrorToggle = $('mirrorToggle');
+  const countdownEl = $('countdown');
+  const workCanvas = $('workCanvas');
+  const settingsToggle = $('settingsToggle');
+  const settingsPanel = $('settingsPanel');
+  const hint = $('hint');
+  const camStatus = $('camStatus');
+
+  const required = { video, captured, photoEmpty, startCamBtn, captureBtn, retakeBtn, downloadBtn, bwToggle, mirrorToggle, countdownEl, workCanvas, settingsToggle, settingsPanel, hint };
+  const missing = Object.keys(required).filter((k) => !required[k]);
+  if (missing.length) {
+    showCrashBanner('Setup error: missing element(s) (' + missing.join(', ') + ').');
+    return;
+  }
+
+  // ---------- force correct initial visual state via JS, not just markup ----------
+  function show(el) { el.classList.remove('is-hidden'); }
+  function hide(el) { el.classList.add('is-hidden'); }
+  hide(video);
+  hide(captured);
+  hide(countdownEl);
+  show(photoEmpty);
+  captureBtn.disabled = true;
+  downloadBtn.disabled = true;
+  retakeBtn.hidden = true;
+  captureBtn.hidden = false;
+
+  let stream = null;
+  let mirrored = true;
+  let bw = false;
+
+  const bindings = [
+    ['cfgMasthead', 'outMasthead'],
+    ['cfgHeadline', 'outHeadline'],
+    ['cfgHeadline', 'outHeadline2'],
+    ['cfgTagline', 'outTagline'],
+    ['cfgBanner', 'outBanner'],
+    ['cfgVolume', 'outVolume'],
+  ];
+  bindings.forEach(([inputId, outputId]) => {
+    const input = $(inputId);
+    const output = $(outputId);
+    if (input && output) input.addEventListener('input', () => { output.textContent = input.value || output.textContent; });
+  });
+  const cfgStudio = $('cfgStudio');
+  if (cfgStudio) {
+    cfgStudio.addEventListener('input', (e) => {
+      const val = e.target.value.trim() || 'MY STUDIO';
+      $('outStudioFooter').textContent = val.toLowerCase();
+    });
+  }
+
+  $('outYear').textContent = String(new Date().getFullYear()).slice(0, 2);
+
+  settingsToggle.addEventListener('click', () => {
+    const isHidden = settingsPanel.hasAttribute('hidden');
+    if (isHidden) { settingsPanel.removeAttribute('hidden'); } else { settingsPanel.setAttribute('hidden', ''); }
+    settingsToggle.setAttribute('aria-expanded', String(isHidden));
+  });
+
+  function setStatus(msg) {
+    if (camStatus) camStatus.textContent = msg;
+    if (hint) hint.textContent = msg || 'Camera access stays on your device — nothing is uploaded anywhere.';
+  }
+
+  async function getStream() {
+    try {
+      return await navigator.mediaDevices.getUserMedia({
+        video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 1600 } },
+        audio: false,
+      });
+    } catch (e) {
+      return await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+    }
+  }
+
+  async function startCamera() {
+    setStatus('');
+    const isSecure = window.isSecureContext || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+    if (!isSecure) {
+      setStatus('Camera access needs https:// (or localhost). Opening this file directly (file://) blocks it.');
+      return;
+    }
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setStatus("This browser doesn't support camera access. Try the latest Safari or Chrome.");
+      return;
+    }
+    startCamBtn.disabled = true;
+    const originalLabel = startCamBtn.textContent;
+    startCamBtn.textContent = 'Requesting access…';
+    try {
+      stream = await getStream();
+      video.srcObject = stream;
+      await video.play().catch(() => {});
+      hide(photoEmpty);
+      show(video);
+      captureBtn.disabled = false;
+      applyLiveClasses();
+    } catch (err) {
+      if (err && (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError')) {
+        setStatus('Camera permission was blocked. On iPhone: Settings app → Safari → Camera → Allow (or tap the "aA" icon in the address bar → Website Settings → Camera → Allow), then reload.');
+      } else if (err && (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError')) {
+        setStatus('No camera was found on this device.');
+      } else if (err && err.name === 'NotReadableError') {
+        setStatus('The camera is already in use by another app or tab. Close it and try again.');
+      } else {
+        setStatus(`Couldn't access your camera (${err && err.name ? err.name : 'unknown error'}). If you're in an app browser (Instagram/TikTok/Messenger), open this link in Safari directly instead.`);
+      }
+    } finally {
+      startCamBtn.disabled = false;
+      startCamBtn.textContent = originalLabel;
+    }
+  }
+  startCamBtn.addEventListener('click', startCamera);
+
+  function applyLiveClasses() {
+    video.classList.toggle('mirrored', mirrored);
+    video.classList.toggle('bw', bw);
+    captured.classList.toggle('mirrored', mirrored);
+    captured.classList.toggle('bw', bw);
+  }
+
+  mirrorToggle.addEventListener('click', () => {
+    mirrored = !mirrored;
+    mirrorToggle.textContent = `Mirror: ${mirrored ? 'On' : 'Off'}`;
+    mirrorToggle.setAttribute('aria-pressed', String(mirrored));
+    applyLiveClasses();
+  });
+
+  bwToggle.addEventListener('click', () => {
+    bw = !bw;
+    bwToggle.textContent = `B&W newsprint: ${bw ? 'On' : 'Off'}`;
+    bwToggle.setAttribute('aria-pressed', String(bw));
+    applyLiveClasses();
+  });
+
+  captureBtn.addEventListener('click', () => runCountdown(3));
+
+  function runCountdown(n) {
+    captureBtn.disabled = true;
+    show(countdownEl);
+    countdownEl.textContent = n;
+    if (n === 0) {
+      hide(countdownEl);
+      takePhoto();
+      return;
+    }
+    setTimeout(() => runCountdown(n - 1), 700);
+  }
+
+  function takePhoto() {
+    const vw = video.videoWidth || 720;
+    const vh = video.videoHeight || 900;
+    workCanvas.width = vw;
+    workCanvas.height = vh;
+    const ctx = workCanvas.getContext('2d');
+
+    ctx.save();
+    if (mirrored) {
+      ctx.translate(vw, 0);
+      ctx.scale(-1, 1);
+    }
+    if (bw) {
+      ctx.filter = 'grayscale(1) contrast(1.15) brightness(1.02)';
+    }
+    ctx.drawImage(video, 0, 0, vw, vh);
+    ctx.restore();
+
+    captured.src = workCanvas.toDataURL('image/png');
+    show(captured);
+    captured.classList.remove('mirrored', 'bw');
+    hide(video);
+
+    if (stream) stream.getTracks().forEach((t) => t.stop());
+
+    retakeBtn.hidden = false;
+    captureBtn.hidden = true;
+    downloadBtn.disabled = false;
+  }
+
+  retakeBtn.addEventListener('click', () => {
+    hide(captured);
+    retakeBtn.hidden = true;
+    captureBtn.hidden = false;
+    captureBtn.disabled = true;
+    downloadBtn.disabled = true;
+    startCamera();
+  });
+
+  downloadBtn.addEventListener('click', async () => {
+    downloadBtn.disabled = true;
+    const originalLabel = downloadBtn.textContent;
+    downloadBtn.textContent = 'Preparing…';
+    try {
+      const node = $('newspaper');
+      const canvas = await html2canvas(node, { backgroundColor: '#faf6ee', scale: 3, useCORS: true });
+      const link = document.createElement('a');
+      const headlineVal = ($('cfgHeadline').value || 'photobooth').trim().toLowerCase().replace(/\s+/g, '-');
+      link.download = `${headlineVal}-front-page.png`;
+      link.href = canvas.toDataURL('image/png');
+      link.click();
+    } catch (err) {
+      hint.textContent = 'Could not generate the image. Try again, or take a screenshot instead.';
+    } finally {
+      downloadBtn.textContent = originalLabel;
+      downloadBtn.disabled = false;
+    }
+  });
+})();
+</script>
 </body>
 </html>
