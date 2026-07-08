@@ -241,6 +241,14 @@ body{
   padding: 20px;
   font-family:'Oswald', sans-serif;
 }
+.cam-status{
+  margin: 0;
+  font-size: 12px;
+  line-height:1.5;
+  color: #ffd9d9;
+  max-width: 280px;
+}
+.cam-status:empty{ display:none; }
 
 .countdown{
   position:absolute;
