@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Newspaper Photobooth</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Anton&family=Oswald:wght@400;500;600;700&family=Playfair+Display:ital,wght@0,700;1,600&family=PT+Serif:ital,wght@0,400;0,700;1,400&family=Noto+Serif+SC:wght@700;900&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="page">
+
+  <!-- ============ HEADER / CONTROLS ============ -->
+  <header class="app-header">
+    <h1 class="app-title">Newspaper Photobooth</h1>
+    <p class="app-sub">Step up, strike a pose, make the front page.</p>
+    <button id="settingsToggle" class="ghost-btn" type="button" aria-expanded="false" aria-controls="settingsPanel">
+      Customize headline ✎
+    </button>
+  </header>
+
+  <!-- ============ SETTINGS PANEL ============ -->
+  <section id="settingsPanel" class="settings-panel" hidden>
+    <div class="settings-grid">
+      <label>Masthead (small top)
+        <input type="text" id="cfgMasthead" maxlength="10" value="唐人街">
+      </label>
+      <label>Studio name
+        <input type="text" id="cfgStudio" maxlength="18" value="MY STUDIO">
+      </label>
+      <label>Big headline
+        <input type="text" id="cfgHeadline" maxlength="14" value="BINONDO">
+      </label>
+      <label>Tagline
+        <input type="text" id="cfgTagline" maxlength="40" value="Love, Laughter, and Lucky Shots!">
+      </label>
+      <label>Banner text
+        <input type="text" id="cfgBanner" maxlength="24" value="PROSPERITY ISSUE">
+      </label>
+      <label>Volume
+        <input type="text" id="cfgVolume" maxlength="8" value="26">
+      </label>
+    </div>
+  </section>
+
+  <!-- ============ THE NEWSPAPER ============ -->
+  <main id="newspaper" class="newspaper">
+
+    <div class="corner corner-tl" aria-hidden="true"></div>
+    <div class="corner corner-tr" aria-hidden="true"></div>
+    <div class="corner corner-bl" aria-hidden="true"></div>
+    <div class="corner corner-br" aria-hidden="true"></div>
+
+    <div class="masthead">
+      <div class="masthead-cell masthead-logo">
+        <span class="logo-mark">RED</span><span class="logo-sub">STUDIO</span>
+      </div>
+      <div class="masthead-cell masthead-cjk" id="outMasthead">唐人街</div>
+      <div class="masthead-cell masthead-vol">
+        <span class="vol-year" id="outYear">20</span>
+        <span class="vol-line">VOL. <span id="outVolume">26</span></span>
+      </div>
+    </div>
+    <div class="rule rule-thick"></div>
+
+    <h2 class="headline" id="outHeadline">BINONDO</h2>
+    <p class="tagline" id="outTagline">Love, Laughter, and Lucky Shots!</p>
+
+    <div class="photo-frame">
+      <div class="photo-inner" id="photoInner">
+        <video id="video" autoplay playsinline muted></video>
+        <img id="captured" alt="Your captured photo" hidden>
+        <div class="photo-empty" id="photoEmpty">
+          <p>Camera preview appears here</p>
+          <button id="startCam" class="primary-btn" type="button">Start camera</button>
+        </div>
+        <div class="countdown" id="countdown" hidden></div>
+      </div>
+    </div>
+
+    <div class="issue-banner">
+      <span class="banner-cjk">福气常在</span>
+      <span class="banner-text" id="outBanner">PROSPERITY ISSUE</span>
+      <span class="banner-cjk">美味相随</span>
+    </div>
+
+    <div class="columns">
+      <article class="col">
+        <img class="col-thumb" src="assets/thumb-lanterns.svg" alt="">
+        <h3>THE YEAR OF<br>GOOD VIBES</h3>
+        <p>This booth turns an ordinary afternoon into tomorrow's headline. Strike a pose, pick a filter, and let the front page do the bragging for you.</p>
+      </article>
+      <article class="col col-map">
+        <h3>A WALK THROUGH<br><span class="col-title-big" id="outHeadline2">BINONDO</span></h3>
+        <div class="mini-map" aria-hidden="true">
+          <svg viewBox="0 0 120 90" xmlns="http://www.w3.org/2000/svg">
+            <rect x="1" y="1" width="118" height="88" fill="none" stroke="currentColor" stroke-width="1.5"/>
+            <path d="M10 70 L40 20 L70 60 L100 15" stroke="currentColor" stroke-width="1" fill="none"/>
+            <circle cx="10" cy="70" r="2.5" fill="currentColor"/>
+            <circle cx="40" cy="20" r="2.5" fill="currentColor"/>
+            <circle cx="70" cy="60" r="2.5" fill="currentColor"/>
+            <circle cx="100" cy="15" r="2.5" fill="currentColor"/>
+          </svg>
+        </div>
+        <p class="cjk-small">玩得开心，吃得开心！<br>ENJOY YOUR FOOD TRIP!</p>
+      </article>
+      <article class="col">
+        <img class="col-thumb" src="assets/thumb-crowd.svg" alt="">
+        <h3>BIG SMILES,<br>BIGGER MEMORIES</h3>
+        <p>Word spreads fast about a good photo spot. Every strip that comes out of this booth is proof you were exactly where the fun was happening.</p>
+      </article>
+    </div>
+
+    <div class="rule rule-thin"></div>
+    <footer class="paper-footer">
+      <span id="outStudioFooter">my studio</span><span class="dot">.</span>
+    </footer>
+  </main>
+
+  <!-- ============ ACTION BAR ============ -->
+  <section class="actions">
+    <button id="captureBtn" class="primary-btn" type="button" disabled>Take photo</button>
+    <button id="retakeBtn" class="ghost-btn" type="button" hidden>Retake</button>
+    <button id="bwToggle" class="ghost-btn toggle-btn" type="button" aria-pressed="false">B&amp;W newsprint: Off</button>
+    <button id="mirrorToggle" class="ghost-btn toggle-btn" type="button" aria-pressed="true">Mirror: On</button>
+    <button id="downloadBtn" class="primary-btn" type="button" disabled>Download front page</button>
+  </section>
+
+  <p class="hint" id="hint">Camera access stays on your device — nothing is uploaded anywhere.</p>
+
+  <canvas id="workCanvas" hidden></canvas>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+<script src="script.js"></script>
+</body>
+</html>
