@@ -1,4 +1,22 @@
 (() => {
+  // ---------- visible crash banner (works even if the rest of this file errors) ----------
+  function showCrashBanner(message) {
+    let banner = document.getElementById('crashBanner');
+    if (!banner) {
+      banner = document.createElement('div');
+      banner.id = 'crashBanner';
+      banner.style.cssText = 'position:sticky;top:0;z-index:9999;background:#ffd9d9;color:#5c0e18;' +
+        'font-family:sans-serif;font-size:13px;line-height:1.5;padding:12px 16px;text-align:center;' +
+        'border-bottom:2px solid #7c1420;';
+      document.body.prepend(banner);
+    }
+    banner.textContent = message;
+  }
+  window.addEventListener('error', (e) => {
+    showCrashBanner('A script error occurred: ' + (e.message || 'unknown error') +
+      '. This usually means the deployed files are out of sync — try clearing your browser cache/site data and reloading.');
+  });
+
   const $ = (id) => document.getElementById(id);
 
   // ---------- elements ----------
@@ -16,6 +34,15 @@
   const settingsToggle = $('settingsToggle');
   const settingsPanel = $('settingsPanel');
   const hint = $('hint');
+  const camStatus = $('camStatus');
+
+  const required = { video, captured, photoEmpty, startCamBtn, captureBtn, retakeBtn, downloadBtn, bwToggle, mirrorToggle, countdownEl, workCanvas, settingsToggle, settingsPanel, hint };
+  const missing = Object.keys(required).filter((k) => !required[k]);
+  if (missing.length) {
+    showCrashBanner('Setup error: this page is missing element(s) (' + missing.join(', ') +
+      '). Your index.html and script.js are probably from different versions — re-upload both files together, then hard-reload.');
+    return; // stop here rather than throwing further errors
+  }
 
   let stream = null;
   let mirrored = true;
@@ -48,37 +75,60 @@
     settingsToggle.setAttribute('aria-expanded', String(isHidden));
   });
 
+  function setStatus(msg) {
+    if (camStatus) camStatus.textContent = msg;
+    if (hint) hint.textContent = msg || 'Camera access stays on your device — nothing is uploaded anywhere.';
+  }
+
   // ---------- camera ----------
-  async function startCamera() {
-    const isSecure = window.isSecureContext || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
-    if (!isSecure) {
-      hint.textContent = 'Camera access needs https:// (or localhost). Opening this file directly (file://) or over plain http:// blocks it — try GitHub Pages or "python3 -m http.server" instead.';
-      return;
-    }
-    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-      hint.textContent = "This browser doesn't support camera access. Try the latest Chrome, Safari, or Firefox.";
-      return;
-    }
+  async function getStream() {
+    // Try ideal constraints first; iOS Safari can throw OverconstrainedError
+    // on some devices, so fall back to the simplest possible request.
     try {
-      stream = await navigator.mediaDevices.getUserMedia({
+      return await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 1600 } },
         audio: false,
       });
+    } catch (e) {
+      return await navigator.mediaDevices.getUserMedia({ video: true, audio: false });
+    }
+  }
+
+  async function startCamera() {
+    setStatus('');
+    const isSecure = window.isSecureContext || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+    if (!isSecure) {
+      setStatus('Camera access needs https:// (or localhost). Opening this file directly (file://) blocks it.');
+      return;
+    }
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      setStatus("This browser doesn't support camera access. Try the latest Safari or Chrome.");
+      return;
+    }
+    startCamBtn.disabled = true;
+    const originalLabel = startCamBtn.textContent;
+    startCamBtn.textContent = 'Requesting access…';
+    try {
+      stream = await getStream();
       video.srcObject = stream;
+      await video.play().catch(() => {});
       photoEmpty.setAttribute('hidden', '');
       video.hidden = false;
       captureBtn.disabled = false;
       applyLiveClasses();
     } catch (err) {
-      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
-        hint.textContent = 'Camera permission was blocked. Allow camera access for this site in your browser\'s address-bar settings, then try again.';
-      } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
-        hint.textContent = 'No camera was found on this device.';
-      } else if (err.name === 'NotReadableError') {
-        hint.textContent = 'The camera is already in use by another app or tab. Close it and try again.';
+      if (err && (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError')) {
+        setStatus('Camera permission was blocked. On iPhone: Settings app → Safari → Camera → Allow (or tap the "aA" icon in the address bar → Website Settings → Camera → Allow), then reload this page.');
+      } else if (err && (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError')) {
+        setStatus('No camera was found on this device.');
+      } else if (err && err.name === 'NotReadableError') {
+        setStatus('The camera is already in use by another app or tab. Close it and try again.');
       } else {
-        hint.textContent = "Couldn't access your camera — check your browser's permission settings and try again.";
+        setStatus(`Couldn't access your camera (${err && err.name ? err.name : 'unknown error'}). If you're in an app browser (Instagram/TikTok/Messenger), open this link in Safari directly instead.`);
       }
+    } finally {
+      startCamBtn.disabled = false;
+      startCamBtn.textContent = originalLabel;
     }
   }
   startCamBtn.addEventListener('click', startCamera);
