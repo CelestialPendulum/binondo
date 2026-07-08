@@ -50,6 +50,15 @@
 
   // ---------- camera ----------
   async function startCamera() {
+    const isSecure = window.isSecureContext || location.hostname === 'localhost' || location.hostname === '127.0.0.1';
+    if (!isSecure) {
+      hint.textContent = 'Camera access needs https:// (or localhost). Opening this file directly (file://) or over plain http:// blocks it — try GitHub Pages or "python3 -m http.server" instead.';
+      return;
+    }
+    if (!navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
+      hint.textContent = "This browser doesn't support camera access. Try the latest Chrome, Safari, or Firefox.";
+      return;
+    }
     try {
       stream = await navigator.mediaDevices.getUserMedia({
         video: { facingMode: 'user', width: { ideal: 1280 }, height: { ideal: 1600 } },
@@ -61,7 +70,15 @@
       captureBtn.disabled = false;
       applyLiveClasses();
     } catch (err) {
-      hint.textContent = "Couldn't access your camera — check your browser's permission settings and try again.";
+      if (err.name === 'NotAllowedError' || err.name === 'PermissionDeniedError') {
+        hint.textContent = 'Camera permission was blocked. Allow camera access for this site in your browser\'s address-bar settings, then try again.';
+      } else if (err.name === 'NotFoundError' || err.name === 'DevicesNotFoundError') {
+        hint.textContent = 'No camera was found on this device.';
+      } else if (err.name === 'NotReadableError') {
+        hint.textContent = 'The camera is already in use by another app or tab. Close it and try again.';
+      } else {
+        hint.textContent = "Couldn't access your camera — check your browser's permission settings and try again.";
+      }
     }
   }
   startCamBtn.addEventListener('click', startCamera);
